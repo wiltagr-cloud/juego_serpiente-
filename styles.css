@@ -35,8 +35,8 @@ p {
 
 .marcador {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   gap: 10px;
 
   width: min(100%, 600px);
@@ -55,28 +55,78 @@ p {
 
 #estado {
   color: #75e6a7;
-  font-weight: bold;
   font-size: 0.9rem;
+  font-weight: bold;
 }
 
 canvas {
   display: block;
-
-  width: min(100%, 600px);
+  width: 100%;
+  max-width: 600px;
   height: auto;
   aspect-ratio: 1 / 1;
 
   margin: 0 auto;
-  background: #f4f1de;
 
+  background: #f4f1de;
   border: 3px solid #2a9d8f;
   border-radius: 8px;
 
   box-shadow: 0 0 25px rgba(42, 157, 143, 0.2);
 }
 
-button {
-  margin-top: 16px;
+/* Controles de movimiento */
+.controles-movimiento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.fila-controles {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-mover {
+  width: 62px;
+  height: 52px;
+  margin: 0;
+  padding: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #1c2b36;
+  color: white;
+
+  border: 2px solid #2a9d8f;
+  border-radius: 12px;
+
+  font-size: 25px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-mover:hover {
+  background: #2a9d8f;
+  transform: translateY(-2px);
+}
+
+.btn-mover:active {
+  background: #176b5b;
+  transform: scale(0.93);
+}
+
+/* Botón de reinicio */
+#botonReiniciar {
+  margin-top: 18px;
   padding: 12px 22px;
 
   border: none;
@@ -87,17 +137,17 @@ button {
 
   font-size: 1rem;
   font-weight: bold;
-
   cursor: pointer;
+
   transition: background 0.2s, transform 0.2s;
 }
 
-button:hover {
+#botonReiniciar:hover {
   background: #238579;
   transform: translateY(-2px);
 }
 
-button:active {
+#botonReiniciar:active {
   transform: scale(0.97);
 }
 
@@ -117,7 +167,9 @@ button:active {
     font-size: 0.85rem;
   }
 
-  button {
-    width: 100%;
+  .btn-mover {
+    width: 68px;
+    height: 56px;
+    font-size: 27px;
   }
 }

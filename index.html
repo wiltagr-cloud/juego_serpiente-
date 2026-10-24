@@ -7,34 +7,50 @@
 
   <title>Juego de la serpiente</title>
 
-  <link rel="stylesheet" href="styles.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./script.js" defer></script>
 </head>
 
 <body>
   <main class="contenedor">
-    <h1>🐍 Juego de la serpiente</h1>
 
-    <p>Usa las flechas o W, A, S, D para moverte.</p>
+    <h1>🐍 Juego de la serpiente</h1>
+    <p>Come las frutas y evita chocar contra las paredes o contigo mismo.</p>
 
     <div class="marcador">
       <span>🏆 Puntaje: <strong id="puntaje">0</strong></span>
-      <span id="estado">¡A jugar!</span>
+      <span id="estado">¡En movimiento!</span>
     </div>
 
     <canvas id="canvasJuego" width="600" height="600">
       Tu navegador no admite el elemento canvas.
     </canvas>
 
-    <div class="controles">
-      <button id="botonReiniciar" type="button">
-        🔄 Reiniciar juego
-      </button>
+    <!-- Botones para mover la serpiente -->
+    <div class="controles-movimiento">
+      <button class="btn-mover" data-direccion="arriba"
+        type="button" aria-label="Mover arriba">⬆️</button>
+
+      <div class="fila-controles">
+        <button class="btn-mover" data-direccion="izquierda"
+          type="button" aria-label="Mover izquierda">⬅️</button>
+
+        <button class="btn-mover" data-direccion="abajo"
+          type="button" aria-label="Mover abajo">⬇️</button>
+
+        <button class="btn-mover" data-direccion="derecha"
+          type="button" aria-label="Mover derecha">➡️</button>
+      </div>
     </div>
 
+    <button id="botonReiniciar" type="button">
+      🔄 Reiniciar juego
+    </button>
+
     <p class="ayuda">
-      🍎 Come la comida y evita chocar.
+      Usa las flechas, W, A, S, D o los botones de movimiento.
     </p>
+
   </main>
 </body>
 </html>

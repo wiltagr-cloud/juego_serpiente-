@@ -1,6 +1,7 @@
 
 "use strict";
 
+// Configuración
 const TAMANIO_CELDA = 25;
 const VELOCIDAD = 120;
 
@@ -11,9 +12,12 @@ const elementoPuntaje = document.getElementById("puntaje");
 const elementoEstado = document.getElementById("estado");
 const botonReiniciar = document.getElementById("botonReiniciar");
 
+const botonesMovimiento = document.querySelectorAll(".btn-mover");
+
 const COLUMNAS = canvas.width / TAMANIO_CELDA;
 const FILAS = canvas.height / TAMANIO_CELDA;
 
+// Variables del juego
 let serpiente = [];
 let direccion = { x: 1, y: 0 };
 let proximaDireccion = { x: 1, y: 0 };
@@ -22,7 +26,15 @@ let puntaje = 0;
 let temporizador = null;
 let juegoTerminado = false;
 
-// Iniciar el juego
+// Direcciones para los botones y el teclado
+const mapaDirecciones = {
+  arriba: { x: 0, y: -1 },
+  abajo: { x: 0, y: 1 },
+  izquierda: { x: -1, y: 0 },
+  derecha: { x: 1, y: 0 }
+};
+
+// Iniciar o reiniciar el juego
 function iniciarJuego() {
   clearInterval(temporizador);
 
@@ -45,11 +57,11 @@ function iniciarJuego() {
   colocarComida();
   dibujarTodo();
 
-  // La serpiente empieza a moverse automáticamente
+  // Movimiento automático de la serpiente
   temporizador = setInterval(actualizarJuego, VELOCIDAD);
 }
 
-// Dibujar el fondo
+// Dibujar el tablero
 function dibujarTablero() {
   ctx.fillStyle = "#f4f1de";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -77,6 +89,7 @@ function dibujarComida() {
   const x = comida.x * TAMANIO_CELDA;
   const y = comida.y * TAMANIO_CELDA;
 
+  // Fruta
   ctx.fillStyle = "#e76f51";
   ctx.beginPath();
   ctx.arc(
@@ -88,7 +101,7 @@ function dibujarComida() {
   );
   ctx.fill();
 
-  // Brillo de la comida
+  // Brillo de la fruta
   ctx.fillStyle = "#ffd6a5";
   ctx.beginPath();
   ctx.arc(x + 8, y + 7, 3, 0, Math.PI * 2);
@@ -115,42 +128,44 @@ function dibujarSerpiente() {
 
     // Ojos de la cabeza
     if (indice === 0) {
-      ctx.fillStyle = "#ffffff";
-
-      let ojo1;
-      let ojo2;
-
-      if (direccion.x === 1) {
-        ojo1 = { x: x + 17, y: y + 7 };
-        ojo2 = { x: x + 17, y: y + 16 };
-      } else if (direccion.x === -1) {
-        ojo1 = { x: x + 7, y: y + 7 };
-        ojo2 = { x: x + 7, y: y + 16 };
-      } else if (direccion.y === -1) {
-        ojo1 = { x: x + 7, y: y + 7 };
-        ojo2 = { x: x + 16, y: y + 7 };
-      } else {
-        ojo1 = { x: x + 7, y: y + 17 };
-        ojo2 = { x: x + 16, y: y + 17 };
-      }
-
-      [ojo1, ojo2].forEach(ojo => {
-        ctx.beginPath();
-        ctx.arc(ojo.x, ojo.y, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#101820";
-        ctx.beginPath();
-        ctx.arc(ojo.x, ojo.y, 1.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-      });
+      dibujarOjos(x, y);
     }
   });
 }
 
-// Dibujar todo el juego
+// Dibujar los ojos según la dirección de la cabeza
+function dibujarOjos(x, y) {
+  let ojo1;
+  let ojo2;
+
+  if (direccion.x === 1) {
+    ojo1 = { x: x + 17, y: y + 7 };
+    ojo2 = { x: x + 17, y: y + 16 };
+  } else if (direccion.x === -1) {
+    ojo1 = { x: x + 7, y: y + 7 };
+    ojo2 = { x: x + 7, y: y + 16 };
+  } else if (direccion.y === -1) {
+    ojo1 = { x: x + 7, y: y + 7 };
+    ojo2 = { x: x + 16, y: y + 7 };
+  } else {
+    ojo1 = { x: x + 7, y: y + 17 };
+    ojo2 = { x: x + 16, y: y + 17 };
+  }
+
+  [ojo1, ojo2].forEach(ojo => {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(ojo.x, ojo.y, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#101820";
+    ctx.beginPath();
+    ctx.arc(ojo.x, ojo.y, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+// Dibujar todos los elementos
 function dibujarTodo() {
   dibujarTablero();
   dibujarComida();
@@ -159,23 +174,36 @@ function dibujarTodo() {
 
 // Colocar comida sin que aparezca sobre la serpiente
 function colocarComida() {
-  do {
-    comida = {
-      x: Math.floor(Math.random() * COLUMNAS),
-      y: Math.floor(Math.random() * FILAS)
-    };
-  } while (
-    serpiente.some(segmento =>
-      segmento.x === comida.x && segmento.y === comida.y
-    )
-  );
+  const casillasLibres = [];
+
+  for (let y = 0; y < FILAS; y++) {
+    for (let x = 0; x < COLUMNAS; x++) {
+      const ocupada = serpiente.some(segmento =>
+        segmento.x === x && segmento.y === y
+      );
+
+      if (!ocupada) {
+        casillasLibres.push({ x, y });
+      }
+    }
+  }
+
+  // Si no quedan casillas libres, el jugador gana
+  if (casillasLibres.length === 0) {
+    ganarJuego();
+    return;
+  }
+
+  comida = casillasLibres[
+    Math.floor(Math.random() * casillasLibres.length)
+  ];
 }
 
-// Actualizar el movimiento
+// Actualizar movimiento y comprobar colisiones
 function actualizarJuego() {
   if (juegoTerminado) return;
 
-  direccion = proximaDireccion;
+  direccion = { ...proximaDireccion };
 
   const cabezaActual = serpiente[0];
 
@@ -184,7 +212,7 @@ function actualizarJuego() {
     y: cabezaActual.y + direccion.y
   };
 
-  // Detectar choque con las paredes
+  // Comprobar choque con las paredes
   const chocaConPared =
     nuevaCabeza.x < 0 ||
     nuevaCabeza.x >= COLUMNAS ||
@@ -195,7 +223,7 @@ function actualizarJuego() {
     nuevaCabeza.x === comida.x &&
     nuevaCabeza.y === comida.y;
 
-  // Si no come, la última celda se libera en este movimiento
+  // Si no come, la cola se mueve y libera su casilla
   const cuerpoParaRevisar = comeComida
     ? serpiente
     : serpiente.slice(0, -1);
@@ -210,7 +238,7 @@ function actualizarJuego() {
     return;
   }
 
-  // Añadir nueva cabeza
+  // Añadir la nueva cabeza
   serpiente.unshift(nuevaCabeza);
 
   if (comeComida) {
@@ -218,15 +246,17 @@ function actualizarJuego() {
     elementoPuntaje.textContent = puntaje;
 
     colocarComida();
+
+    if (juegoTerminado) return;
   } else {
-    // Quitar la cola para mantener el tamaño
+    // Quitar el último segmento
     serpiente.pop();
   }
 
   dibujarTodo();
 }
 
-// Finalizar partida
+// Finalizar la partida
 function terminarJuego() {
   juegoTerminado = true;
   clearInterval(temporizador);
@@ -234,14 +264,21 @@ function terminarJuego() {
   elementoEstado.textContent = "¡Fin del juego!";
   elementoEstado.style.color = "#ff8277";
 
-  // Mensaje encima del tablero
-  ctx.fillStyle = "rgba(16, 24, 32, 0.78)";
+  dibujarTodo();
+
+  // Fondo del mensaje
+  ctx.fillStyle = "rgba(16, 24, 32, 0.88)";
   ctx.fillRect(50, 240, 500, 120);
 
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
+
   ctx.font = "bold 30px Arial";
-  ctx.fillText("¡Juego terminado!", canvas.width / 2, 290);
+  ctx.fillText(
+    "¡Juego terminado!",
+    canvas.width / 2,
+    290
+  );
 
   ctx.font = "18px Arial";
   ctx.fillText(
@@ -253,43 +290,85 @@ function terminarJuego() {
   ctx.textAlign = "start";
 }
 
-// Controlar la dirección
-function cambiarDireccion(evento) {
-  const tecla = evento.key.toLowerCase();
+// Ganar cuando se ocupa todo el tablero
+function ganarJuego() {
+  juegoTerminado = true;
+  clearInterval(temporizador);
 
-  const direcciones = {
-    arrowup: { x: 0, y: -1 },
-    w: { x: 0, y: -1 },
+  elementoEstado.textContent = "¡Ganaste!";
+  elementoEstado.style.color = "#f4d35e";
 
-    arrowdown: { x: 0, y: 1 },
-    s: { x: 0, y: 1 },
+  dibujarTablero();
+  dibujarSerpiente();
 
-    arrowleft: { x: -1, y: 0 },
-    a: { x: -1, y: 0 },
+  ctx.fillStyle = "rgba(16, 24, 32, 0.88)";
+  ctx.fillRect(50, 240, 500, 120);
 
-    arrowright: { x: 1, y: 0 },
-    d: { x: 1, y: 0 }
-  };
+  ctx.fillStyle = "#f4d35e";
+  ctx.textAlign = "center";
+  ctx.font = "bold 32px Arial";
+  ctx.fillText("¡Felicidades, ganaste!", 300, 290);
 
-  const nuevaDireccion = direcciones[tecla];
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "20px Arial";
+  ctx.fillText("Puntaje: " + puntaje, 300, 325);
 
-  if (!nuevaDireccion || juegoTerminado) return;
+  ctx.textAlign = "start";
+}
 
-  evento.preventDefault();
+// Cambiar dirección sin permitir giros de 180 grados
+function cambiarDireccion(nombreDireccion) {
+  if (juegoTerminado) return;
 
-  // Evitar que la serpiente retroceda directamente
+  const nuevaDireccion = mapaDirecciones[nombreDireccion];
+
+  if (!nuevaDireccion) return;
+
   const giroContrario =
     nuevaDireccion.x === -direccion.x &&
     nuevaDireccion.y === -direccion.y;
 
   if (!giroContrario) {
-    proximaDireccion = nuevaDireccion;
+    proximaDireccion = { ...nuevaDireccion };
   }
 }
 
-// Eventos
-document.addEventListener("keydown", cambiarDireccion);
+// Control con el teclado
+function controlarTeclado(evento) {
+  const tecla = evento.key.toLowerCase();
+
+  const teclasDirecciones = {
+    arrowup: "arriba",
+    w: "arriba",
+
+    arrowdown: "abajo",
+    s: "abajo",
+
+    arrowleft: "izquierda",
+    a: "izquierda",
+
+    arrowright: "derecha",
+    d: "derecha"
+  };
+
+  const nombreDireccion = teclasDirecciones[tecla];
+
+  if (!nombreDireccion) return;
+
+  evento.preventDefault();
+  cambiarDireccion(nombreDireccion);
+}
+
+// Control con los botones en pantalla
+botonesMovimiento.forEach(boton => {
+  boton.addEventListener("click", () => {
+    cambiarDireccion(boton.dataset.direccion);
+  });
+});
+
+// Eventos del juego
+document.addEventListener("keydown", controlarTeclado);
 botonReiniciar.addEventListener("click", iniciarJuego);
 
-// Arrancar automáticamente cuando se carga el archivo
+// Iniciar automáticamente
 iniciarJuego();
