@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Juego de la serpiente</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <main class="contenedor">
+    <h1>🐍 Juego de la serpiente</h1>
+
+    <p>Usa las flechas o W, A, S, D para moverte.</p>
+
+    <div class="marcador">
+      <span>🏆 Puntaje: <strong id="puntaje">0</strong></span>
+      <span id="estado">¡A jugar!</span>
+    </div>
+
+    <canvas id="canvasJuego" width="600" height="600">
+      Tu navegador no admite el elemento canvas.
+    </canvas>
+
+    <div class="controles">
+      <button id="botonReiniciar" type="button">
+        🔄 Reiniciar juego
+      </button>
+    </div>
+
+    <p class="ayuda">
+      🍎 Come la comida y evita chocar.
+    </p>
+  </main>
+</body>
+</html>
